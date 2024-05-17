@@ -1,7 +1,7 @@
 class Answer {
-  late String _answerId;
-  late String _questionId;
-  late String _pollId;
-  late String _answerBy;
-  late String _answer;
+  late String answerId;
+  late String questionId;
+  late String pollId;
+  late String answerBy;
+  late String answer;
 }

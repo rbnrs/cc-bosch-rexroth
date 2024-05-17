@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
-import 'package:poll_app/widgets/question_option_item.dart';
-import 'package:uuid/uuid.dart';
+import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/widgets/question_create_list.dart';
 
 class AddQuestionView extends StatefulWidget {
   const AddQuestionView({super.key});
@@ -13,24 +14,54 @@ class AddQuestionView extends StatefulWidget {
 class _AddQuestionViewState extends State<AddQuestionView> {
   final double _formElementMargin = 15;
   final double _formControlMargin = 30;
-  final double _buttonHeight = 50;
+  final formKey = GlobalKey<FormState>();
 
-  final String _groupId = const Uuid().v1();
+  List<Option> singleSelectOptions = [];
+  List<Option> multiSelectOptions = [];
+
+  String question = "";
 
   QuestionType questionType = QuestionType.singleSelection;
-
-  List<QuestionOptionItem> singleSelectionItems = [];
-  List<QuestionOptionItem> multiSelectionItems = [];
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      appBar: GeneralFragments.createAppBar("Add Question", true, context),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          if (!formKey.currentState!.validate()) return;
+
+          List<Option> options = [];
+
+          if (QuestionType.singleSelection == questionType) {
+            options = singleSelectOptions;
+          }
+
+          if (QuestionType.multiSelection == questionType) {
+            options = multiSelectOptions;
+          }
+
+          Question questionConfirm = Question(
+            '',
+            question,
+            'EN', //TODO remove later with selected language
+            questionType,
+            options,
+            [],
+          );
+
+          Navigator.of(context).pop([questionConfirm]);
+        },
         icon: const Icon(Icons.check),
-        label: const Text('Confirm'),
+        label: const SizedBox(
+          width: 100,
+          child: Text(
+            "Confirm",
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
       body: CustomScrollView(
         slivers: [
@@ -80,10 +111,19 @@ class _AddQuestionViewState extends State<AddQuestionView> {
         SizedBox(
           height: _formElementMargin,
         ),
-        TextFormField(
-          decoration: const InputDecoration(hintText: "Enter the question..."),
-          onChanged: (val) {},
-        ),
+        Form(
+          key: formKey,
+          child: TextFormField(
+            validator: (value) {
+              return value!.isEmpty ? 'Please enter a question' : null;
+            },
+            decoration:
+                const InputDecoration(hintText: "Enter the question..."),
+            onChanged: (val) {
+              question = val;
+            },
+          ),
+        )
       ],
     );
   }
@@ -173,112 +213,32 @@ class _AddQuestionViewState extends State<AddQuestionView> {
   }
 
   Widget showSingleSelectionOption() {
-    List<Widget> columnList = [];
-
-    for (QuestionOptionItem questItem in singleSelectionItems) {
-      columnList.add(questItem);
-      columnList.add(SizedBox(
-        height: _formElementMargin,
-      ));
-    }
-
-    columnList.add(Row(
-      children: [
-        Expanded(
-            child: SizedBox(
-          height: _buttonHeight,
-          child: TextButton(
-            onPressed: () {
-              //TODO add parameter + validation check
-              singleSelectionItems.add(
-                QuestionOptionItem(
-                  optionType: QuestionType.singleSelection,
-                  editMode: true,
-                  text: '',
-                  isSelected: false,
-                  onTextChange: (val, uiod) {},
-                  onItemSelect: (itemUuid, selected) {
-                    //TODO remove test
-                    uncheckItemsExcept(itemUuid);
-                  },
-                ),
-              );
-              setState(() {});
-            },
-            child: const Text("Add Option"),
-          ),
-        ))
-      ],
-    ));
-
-    return Column(
-      children: columnList,
+    return QuestionCreateList(
+      key: const Key('singleSelection'),
+      optionType: QuestionType.singleSelection,
+      creationMode: true,
+      options: singleSelectOptions,
+      onOptionItemSaved: (option) {
+        singleSelectOptions.add(option);
+      },
+      onOptionRemoved: (option) {
+        singleSelectOptions.remove(option);
+      },
     );
   }
 
   Widget showMultiSelectionOption() {
-    List<Widget> columnList = [];
-
-    for (QuestionOptionItem questItem in singleSelectionItems) {
-      columnList.add(questItem);
-      columnList.add(SizedBox(
-        height: _formElementMargin,
-      ));
-    }
-    columnList.add(Row(
-      children: [
-        Expanded(
-            child: SizedBox(
-          height: _buttonHeight,
-          child: TextButton(
-            onPressed: () {
-              //TODO add parameter + validation check
-              singleSelectionItems.add(QuestionOptionItem(
-                optionType: QuestionType.multiSelection,
-                text: '',
-                isSelected: false,
-                editMode: true,
-                onTextChange: (val, uiod) {},
-                onItemSelect: (itemUuid, selected) {
-                  //TODO remove test
-                  uncheckItemsExcept(itemUuid);
-                },
-              ));
-              setState(() {});
-            },
-            child: const Text("Add Option"),
-          ),
-        ))
-      ],
-    ));
-
-    return Column(
-      children: columnList,
+    return QuestionCreateList(
+      key: const Key('multiSelection'),
+      optionType: QuestionType.multiSelection,
+      creationMode: true,
+      options: multiSelectOptions,
+      onOptionItemSaved: (option) {
+        multiSelectOptions.add(option);
+      },
+      onOptionRemoved: (option) {
+        multiSelectOptions.remove(option);
+      },
     );
-  }
-
-  void uncheckItemsExcept(String itemUuid) {
-    for (QuestionOptionItem questItem in singleSelectionItems) {
-      if (questItem.getItemUuid() != itemUuid) {
-        int index = singleSelectionItems.indexOf(questItem);
-
-        QuestionOptionItem questItemBuffer = QuestionOptionItem(
-          optionType: questItem.optionType,
-          editMode: questItem.editMode,
-          text: '',
-          isSelected: false,
-          onItemSelect: (itemUuid, selected) {
-            //TODO remove test
-            uncheckItemsExcept(itemUuid);
-          },
-          onTextChange: (val, selected) {},
-        );
-
-        singleSelectionItems.removeAt(index);
-        singleSelectionItems.insert(index, questItemBuffer);
-      }
-    }
-
-    setState(() {});
   }
 }

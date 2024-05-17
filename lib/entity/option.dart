@@ -1,5 +1,11 @@
 class Option {
-  late String _id;
-  late String _questionId;
-  late String _pollId;
+  late String id;
+  late String questionId;
+  late String pollId;
+  late bool editMode;
+  late bool selected;
+  late String text;
+
+  Option(this.id, this.questionId, this.pollId, this.editMode, this.selected,
+      this.text);
 }
