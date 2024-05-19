@@ -10,6 +10,7 @@ import 'package:poll_app/views/create_poll_view.dart';
 import 'package:poll_app/views/home_view.dart';
 import 'package:poll_app/views/not_found_view.dart';
 import 'package:poll_app/views/poll_detail.dart';
+import 'package:poll_app/views/vote_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,11 @@ class MyApp extends StatelessWidget {
 
     switch (routingData.route) {
       case homeRoute:
+        if (routingData.queryParameters.isNotEmpty) {
+          return MaterialPageRoute(
+              builder: (context) => VoteView(pollId: routingData['pollId']),
+              settings: settings);
+        }
         return MaterialPageRoute(
             builder: (context) => const HomeView(), settings: settings);
       case createPoll:
