@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
 import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 import 'package:uuid/uuid.dart';
 
 class QuestionCreateList extends StatefulWidget {
@@ -30,12 +31,6 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
     shape: const CircleBorder(),
     padding: const EdgeInsets.all(15),
   );
-
-  final double _formElementMargin = 15;
-  final double _buttonHeight = 50;
-  final double _itemBorderRadius = 10;
-  final double _itemPadding = 10;
-  final double _iconSizeButton = 20;
 
   List<Option> singleSelectOptions = [];
   List<Option> multiSelectOptions = [];
@@ -70,8 +65,8 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
 
     for (Option option in options) {
       columnList.add(createQuestionOptionItem(option));
-      columnList.add(SizedBox(
-        height: _formElementMargin,
+      columnList.add(const SizedBox(
+        height: CustomStyles.formElementMargin,
       ));
     }
 
@@ -79,7 +74,7 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
       children: [
         Expanded(
             child: SizedBox(
-          height: _buttonHeight,
+          height: CustomStyles.buttonHeight,
           child: TextButton(
             onPressed: () {
               if (widget.optionType == QuestionType.singleSelection) {
@@ -138,10 +133,10 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
     }
 
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Row(
         children: [
@@ -203,8 +198,8 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
                           setState(() {});
                           // widget.onItemSelect(widget.itemUuid, _checkBoxState);
                         }),
-                SizedBox(
-                  width: _itemPadding,
+                const SizedBox(
+                  width: CustomStyles.itemPadding,
                 ),
                 Expanded(
                   child: option.editMode
@@ -245,8 +240,8 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
               ],
             ),
           ),
-          SizedBox(
-            width: _itemPadding,
+          const SizedBox(
+            width: CustomStyles.itemPadding,
           ),
           widget.creationMode ? getActionButtonsForItem(option) : Container()
         ],
@@ -281,9 +276,9 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
                   setState(() {});
                 },
                 style: _actionButtonStyle,
-                child: Icon(
+                child: const Icon(
                   Icons.edit,
-                  size: _iconSizeButton,
+                  size: CustomStyles.iconSizeButton,
                 ),
               )
             : ElevatedButton(
@@ -306,9 +301,9 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
                   widget.onOptionItemSaved(option);
                 },
                 style: _actionButtonStyle,
-                child: Icon(
+                child: const Icon(
                   Icons.save,
-                  size: _iconSizeButton,
+                  size: CustomStyles.iconSizeButton,
                 ),
               ),
         ElevatedButton(
@@ -325,9 +320,9 @@ class _QuestionCreateListState extends State<QuestionCreateList> {
             widget.onOptionItemSaved(option);
           },
           style: actionButtonRemoveStyle,
-          child: Icon(
+          child: const Icon(
             Icons.delete,
-            size: _iconSizeButton,
+            size: CustomStyles.iconSizeButton,
           ),
         ),
       ],

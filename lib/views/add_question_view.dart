@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
 import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 import 'package:poll_app/widgets/question_create_list.dart';
 
 class AddQuestionView extends StatefulWidget {
@@ -12,8 +13,6 @@ class AddQuestionView extends StatefulWidget {
 }
 
 class _AddQuestionViewState extends State<AddQuestionView> {
-  final double _formElementMargin = 15;
-  final double _formControlMargin = 30;
   final formKey = GlobalKey<FormState>();
 
   List<Option> singleSelectOptions = [];
@@ -88,12 +87,12 @@ class _AddQuestionViewState extends State<AddQuestionView> {
     return Column(
       children: [
         createQuestionModeInput(),
-        SizedBox(
-          height: _formControlMargin,
+        const SizedBox(
+          height: CustomStyles.formControlMargin,
         ),
         createQuestionTitleInput(),
-        SizedBox(
-          height: _formControlMargin,
+        const SizedBox(
+          height: CustomStyles.formControlMargin,
         ),
         showQuestionOptionForm()
       ],
@@ -108,8 +107,8 @@ class _AddQuestionViewState extends State<AddQuestionView> {
           "Question",
           style: Theme.of(context).textTheme.labelLarge,
         ),
-        SizedBox(
-          height: _formElementMargin,
+        const SizedBox(
+          height: CustomStyles.formElementMargin,
         ),
         Form(
           key: formKey,

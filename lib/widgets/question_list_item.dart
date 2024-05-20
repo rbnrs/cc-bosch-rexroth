@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
 import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 
 class QuestionListItem extends StatefulWidget {
   final Question question;
@@ -15,10 +16,6 @@ class QuestionListItem extends StatefulWidget {
 }
 
 class _QuestionListItemState extends State<QuestionListItem> {
-  final double _itemBorderRadius = 10;
-  final double _itemPadding = 10;
-  final double _formElementMargin = 10;
-
   final formKey = GlobalKey<FormState>();
 
   List<Option> options = [];
@@ -32,8 +29,8 @@ class _QuestionListItemState extends State<QuestionListItem> {
   @override
   Widget build(BuildContext context) {
     List<Widget> columnListItem = [];
-    SizedBox marginBox = SizedBox(
-      height: _formElementMargin,
+    SizedBox marginBox = const SizedBox(
+      height: CustomStyles.formElementMargin,
     );
 
     columnListItem.add(createQuestionItem());
@@ -51,10 +48,10 @@ class _QuestionListItemState extends State<QuestionListItem> {
 
   Widget createQuestionItem() {
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorDark,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Row(
         children: [
@@ -88,10 +85,10 @@ class _QuestionListItemState extends State<QuestionListItem> {
 
   Widget createOptionItem(Option option) {
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Row(
         children: [
@@ -144,8 +141,8 @@ class _QuestionListItemState extends State<QuestionListItem> {
 
                           setState(() {});
                         }),
-                SizedBox(
-                  width: _itemPadding,
+                const SizedBox(
+                  width: CustomStyles.itemPadding,
                 ),
                 Expanded(
                   child: option.editMode
@@ -186,8 +183,8 @@ class _QuestionListItemState extends State<QuestionListItem> {
               ],
             ),
           ),
-          SizedBox(
-            width: _itemPadding,
+          const SizedBox(
+            width: CustomStyles.itemPadding,
           ),
         ],
       ),

@@ -1,8 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
-import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 
 class QuestionListVoteItem extends StatefulWidget {
   final Question question;
@@ -16,12 +15,6 @@ class QuestionListVoteItem extends StatefulWidget {
 }
 
 class _QuestionListVoteItemState extends State<QuestionListVoteItem> {
-  final double _formElementMargin = 15;
-  final double _buttonHeight = 50;
-  final double _itemBorderRadius = 10;
-  final double _itemPadding = 10;
-  final double _iconSizeButton = 20;
-
   List<Option> options = [];
 
   @override
@@ -33,9 +26,8 @@ class _QuestionListVoteItemState extends State<QuestionListVoteItem> {
   @override
   Widget build(BuildContext context) {
     List<Widget> columnList = [];
-    List<Option> options = [];
-    SizedBox marginBox = SizedBox(
-      height: _formElementMargin,
+    SizedBox marginBox = const SizedBox(
+      height: CustomStyles.formElementMargin,
     );
 
     columnList.add(createQuestionItem());
@@ -52,12 +44,13 @@ class _QuestionListVoteItemState extends State<QuestionListVoteItem> {
 
   Widget createQuestionItem() {
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
-      margin:
-          EdgeInsets.only(left: _formElementMargin, right: _formElementMargin),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
+      margin: const EdgeInsets.only(
+          left: CustomStyles.formElementMargin,
+          right: CustomStyles.formElementMargin),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorDark,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Row(
         children: [
@@ -77,12 +70,13 @@ class _QuestionListVoteItemState extends State<QuestionListVoteItem> {
 
   Widget createQuestionOptionItem(Option option) {
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
-      margin:
-          EdgeInsets.only(left: _formElementMargin, right: _formElementMargin),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
+      margin: const EdgeInsets.only(
+          left: CustomStyles.formElementMargin,
+          right: CustomStyles.formElementMargin),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Row(
         children: [
@@ -125,8 +119,8 @@ class _QuestionListVoteItemState extends State<QuestionListVoteItem> {
 
                           setState(() {});
                         }),
-                SizedBox(
-                  width: _itemPadding,
+                const SizedBox(
+                  width: CustomStyles.itemPadding,
                 ),
                 Expanded(
                   child: Text(
@@ -137,8 +131,8 @@ class _QuestionListVoteItemState extends State<QuestionListVoteItem> {
               ],
             ),
           ),
-          SizedBox(
-            width: _itemPadding,
+          const SizedBox(
+            width: CustomStyles.itemPadding,
           ),
         ],
       ),

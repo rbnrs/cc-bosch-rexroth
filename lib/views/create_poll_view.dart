@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
 import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 import 'package:poll_app/utils/poll_service_handler.dart';
 import 'package:poll_app/widgets/question_list_item.dart';
 
@@ -15,8 +15,6 @@ class CreatePollView extends StatefulWidget {
 class _CreatePollViewState extends State<CreatePollView> {
   final formKey = GlobalKey<FormState>();
   final formKeyDesc = GlobalKey<FormState>();
-  final double _formElementMargin = 15;
-  final double _formControlMargin = 30;
 
   String pollName = "";
   String pollDescription = "";
@@ -39,8 +37,15 @@ class _CreatePollViewState extends State<CreatePollView> {
               !formKey.currentState!.validate()) {
             return;
           }
-          bool successfull = await onSavePoll();
 
+          if (questions.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                GeneralFragments.createErrorSnackbar(
+                    "Please add a question!", context));
+            return;
+          }
+
+          bool successfull = await onSavePoll();
           onShowMessage(successfull);
         },
         icon: const Icon(Icons.save),
@@ -77,8 +82,8 @@ class _CreatePollViewState extends State<CreatePollView> {
     double buttonHeight = 50;
 
     List<Widget> columnItems = [];
-    SizedBox marginBox = SizedBox(
-      height: _formControlMargin,
+    SizedBox marginBox = const SizedBox(
+      height: CustomStyles.formControlMargin,
     );
 
     columnItems.add(createPollNameInput());
@@ -134,8 +139,8 @@ class _CreatePollViewState extends State<CreatePollView> {
           "Name",
           style: Theme.of(context).textTheme.labelLarge,
         ),
-        SizedBox(
-          height: _formElementMargin,
+        const SizedBox(
+          height: CustomStyles.formElementMargin,
         ),
         Form(
           key: formKey,
@@ -161,8 +166,8 @@ class _CreatePollViewState extends State<CreatePollView> {
           "Description",
           style: Theme.of(context).textTheme.labelLarge,
         ),
-        SizedBox(
-          height: _formElementMargin,
+        const SizedBox(
+          height: CustomStyles.formElementMargin,
         ),
         Form(
           key: formKeyDesc,
@@ -184,8 +189,21 @@ class _CreatePollViewState extends State<CreatePollView> {
   }
 
   Future<bool> onSavePoll() async {
-    return await PollServiceHandler()
+    bool isSaved = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return GeneralFragments.createLoadingDialog(context);
+      },
+    );
+
+    isSaved = await PollServiceHandler()
         .onSavePoll(pollName, pollDescription, questions);
+
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).pop();
+    return isSaved;
   }
 
   void onShowMessage(bool successfull) {

@@ -5,15 +5,15 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:poll_app/entity/answer.dart';
 import 'package:poll_app/entity/poll.dart';
 import 'package:poll_app/entity/question.dart';
 import 'package:poll_app/fragments/general_fragments.dart';
 import 'package:poll_app/utils/app_service.dart';
 import 'package:poll_app/utils/app_service_web.dart';
 import 'package:poll_app/utils/app_status.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 import 'package:poll_app/utils/poll_service_handler.dart';
-import 'package:poll_app/views/add_question_view.dart';
-import 'package:poll_app/widgets/question_list_item.dart';
 import 'package:poll_app/widgets/question_result_item.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -28,9 +28,7 @@ class PollDetailView extends StatefulWidget {
 
 class _PollDetailViewState extends State<PollDetailView> {
   Poll poll = AppStatus.currentPoll;
-  final double _formElementMargin = 15;
-  final double _formControlMargin = 30;
-  final double _itemBorderRadius = 10;
+  List<Answer> answers = [];
 
   @override
   initState() {
@@ -40,7 +38,7 @@ class _PollDetailViewState extends State<PollDetailView> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: PollServiceHandler().onLoadPollById(widget.pollId),
+      future: _loadData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           Poll poll = snapshot.data!;
@@ -49,9 +47,9 @@ class _PollDetailViewState extends State<PollDetailView> {
                 GeneralFragments.createAppBar('Poll Overview', true, context),
             body: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: SizedBox(
-                    height: _formElementMargin,
+                    height: CustomStyles.formElementMargin,
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -61,8 +59,8 @@ class _PollDetailViewState extends State<PollDetailView> {
                       createPollHeader(poll),
                       const Spacer(),
                       createShareView(poll, context),
-                      SizedBox(
-                        width: _formControlMargin,
+                      const SizedBox(
+                        width: CustomStyles.formControlMargin,
                       )
                     ],
                   ),
@@ -84,7 +82,7 @@ class _PollDetailViewState extends State<PollDetailView> {
 
   Widget createPollHeader(Poll poll) {
     return Container(
-      margin: EdgeInsets.all(_formElementMargin),
+      margin: const EdgeInsets.all(CustomStyles.formElementMargin),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -92,14 +90,14 @@ class _PollDetailViewState extends State<PollDetailView> {
             poll.name,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          SizedBox(
-            height: _formElementMargin / 2,
+          const SizedBox(
+            height: CustomStyles.formElementMargin / 2,
           ),
           Text(
             poll.id,
           ),
-          SizedBox(
-            height: _formElementMargin * 2,
+          const SizedBox(
+            height: CustomStyles.formElementMargin * 2,
           ),
           Text(
             "Description",
@@ -108,8 +106,8 @@ class _PollDetailViewState extends State<PollDetailView> {
                 .bodyMedium!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
-          SizedBox(
-            height: _formElementMargin,
+          const SizedBox(
+            height: CustomStyles.formElementMargin,
           ),
           Text(
             poll.description,
@@ -122,19 +120,17 @@ class _PollDetailViewState extends State<PollDetailView> {
 
   Widget createPollChart(Poll poll) {
     List<Widget> columnItems = [];
-    SizedBox marginBox = SizedBox(
-      height: _formControlMargin * 2,
+    SizedBox marginBox = const SizedBox(
+      height: CustomStyles.formControlMargin * 2,
     );
 
     for (Question question in poll.questions) {
       columnItems.add(marginBox);
-      columnItems.add(QuestionResultItem(
-        question: question,
-      ));
+      columnItems.add(QuestionResultItem(question: question, answers: answers));
     }
 
     return Container(
-      margin: EdgeInsets.all(_formElementMargin),
+      margin: const EdgeInsets.all(CustomStyles.formElementMargin),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: columnItems,
@@ -162,7 +158,8 @@ class _PollDetailViewState extends State<PollDetailView> {
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(_itemBorderRadius)),
+              borderRadius:
+                  BorderRadius.circular(CustomStyles.itemBorderRadius)),
           surfaceTintColor: Colors.transparent,
           child: createShareDialogContent(),
         );
@@ -179,7 +176,7 @@ class _PollDetailViewState extends State<PollDetailView> {
     qrCode.addData(pollUri);
 
     return Container(
-      padding: EdgeInsets.all(_formElementMargin),
+      padding: const EdgeInsets.all(CustomStyles.formElementMargin),
       constraints: const BoxConstraints(maxWidth: 500),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,15 +202,15 @@ class _PollDetailViewState extends State<PollDetailView> {
                 .titleMedium!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
-          SizedBox(
-            height: _formControlMargin,
+          const SizedBox(
+            height: CustomStyles.formControlMargin,
           ),
           Text(
             "Link to poll",
             style: Theme.of(context).textTheme.labelLarge,
           ),
-          SizedBox(
-            height: _formElementMargin,
+          const SizedBox(
+            height: CustomStyles.formElementMargin,
           ),
           Row(
             children: [
@@ -223,8 +220,8 @@ class _PollDetailViewState extends State<PollDetailView> {
                   enabled: false,
                 ),
               ),
-              SizedBox(
-                width: _formElementMargin,
+              const SizedBox(
+                width: CustomStyles.formElementMargin,
               ),
               IconButton(
                 onPressed: () {
@@ -239,8 +236,8 @@ class _PollDetailViewState extends State<PollDetailView> {
               )
             ],
           ),
-          SizedBox(
-            height: _formElementMargin * 2,
+          const SizedBox(
+            height: CustomStyles.formElementMargin * 2,
           ),
           Center(
               child: Column(
@@ -252,8 +249,8 @@ class _PollDetailViewState extends State<PollDetailView> {
                   data: pollUri,
                 ),
               ),
-              SizedBox(
-                height: _formElementMargin,
+              const SizedBox(
+                height: CustomStyles.formElementMargin,
               ),
               TextButton(
                   onPressed: () async {
@@ -279,11 +276,17 @@ class _PollDetailViewState extends State<PollDetailView> {
                   child: const Text("Download QR Code"))
             ],
           )),
-          SizedBox(
-            height: _formElementMargin,
+          const SizedBox(
+            height: CustomStyles.formElementMargin,
           ),
         ],
       ),
     );
+  }
+
+  Future<Poll> _loadData() async {
+    answers = await PollServiceHandler().getAnswersForPoll(widget.pollId);
+
+    return PollServiceHandler().onLoadPollById(widget.pollId);
   }
 }

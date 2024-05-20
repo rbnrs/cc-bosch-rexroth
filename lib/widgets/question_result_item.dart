@@ -2,30 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:poll_app/entity/answer.dart';
 import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/question.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 
 class QuestionResultItem extends StatelessWidget {
   final Question question;
-
-  const QuestionResultItem({super.key, required this.question});
-
-  final double _itemBorderRadius = 10;
-  final double _itemPadding = 10;
-  final double _formElementMargin = 10;
-  final double _optionItemHeight = 30;
+  final List<Answer> answers;
+  const QuestionResultItem(
+      {super.key, required this.question, required this.answers});
 
   @override
   Widget build(BuildContext context) {
     List<Widget> columnListItem = [];
-    SizedBox marginBox = SizedBox(
-      height: _formElementMargin,
+    SizedBox marginBox = const SizedBox(
+      height: CustomStyles.formElementMargin,
     );
 
     columnListItem.add(createQuestionItem(context));
     columnListItem.add(marginBox);
 
     for (Option option in question.options) {
-      columnListItem
-          .add(createOptionResultItem(context, option, question.answers));
+      columnListItem.add(createOptionResultItem(context, option, answers));
       columnListItem.add(marginBox);
     }
 
@@ -36,10 +32,10 @@ class QuestionResultItem extends StatelessWidget {
 
   Widget createQuestionItem(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorDark,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Row(
         children: [
@@ -65,18 +61,20 @@ class QuestionResultItem extends StatelessWidget {
     double optionAnswerQuote =
         answers.isEmpty ? 0 : countOptionAnswer / answers.length;
 
+    double mediaWidth = MediaQuery.of(context).size.width * 0.9;
+
     return Container(
-      padding: EdgeInsets.all(_itemPadding),
+      padding: const EdgeInsets.all(CustomStyles.itemPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(option.text),
-          SizedBox(
-            height: _formElementMargin,
+          const SizedBox(
+            height: CustomStyles.formElementMargin,
           ),
           Row(
             children: [
@@ -85,14 +83,15 @@ class QuestionResultItem extends StatelessWidget {
                   maxWidth: MediaQuery.of(context).size.width,
                   minWidth: 0,
                 ),
-                height: _optionItemHeight,
-                width: MediaQuery.of(context).size.width * optionAnswerQuote,
+                height: CustomStyles.optionItemHeight,
+                width: mediaWidth * optionAnswerQuote,
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColorLight,
-                  borderRadius: BorderRadius.circular(_itemBorderRadius),
+                  borderRadius:
+                      BorderRadius.circular(CustomStyles.itemBorderRadius),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Text(
                 countOptionAnswer.toString(),
                 style: Theme.of(context).textTheme.titleLarge,

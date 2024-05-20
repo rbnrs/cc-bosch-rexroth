@@ -1,15 +1,15 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:poll_app/entity/answer.dart';
 import 'package:poll_app/entity/poll.dart';
 import 'package:poll_app/entity/question.dart';
 import 'package:poll_app/fragments/general_fragments.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 import 'package:poll_app/utils/poll_service_handler.dart';
 import 'package:poll_app/widgets/question_list_vote_item.dart';
 import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
 
 class VoteView extends StatefulWidget {
   final String pollId;
@@ -21,11 +21,6 @@ class VoteView extends StatefulWidget {
 }
 
 class _VoteViewState extends State<VoteView> {
-  final double _formElementMargin = 15;
-  final double _formControlMargin = 30;
-  final double _itemBorderRadius = 10;
-  final double _buttonHeight = 50;
-
   bool bThankYouScreen = false;
   String userIp = "";
 
@@ -43,9 +38,9 @@ class _VoteViewState extends State<VoteView> {
                   backgroundColor: Theme.of(context).primaryColorLight,
                   body: CustomScrollView(
                     slivers: [
-                      SliverToBoxAdapter(
+                      const SliverToBoxAdapter(
                         child: SizedBox(
-                          height: _formControlMargin,
+                          height: CustomStyles.formControlMargin,
                         ),
                       ),
                       SliverToBoxAdapter(child: createPollHeader(poll)),
@@ -71,8 +66,8 @@ class _VoteViewState extends State<VoteView> {
   Widget createVoteList(Poll poll) {
     List<Widget> voteListItems = [];
 
-    SizedBox sizedBox = SizedBox(
-      height: _formElementMargin,
+    SizedBox sizedBox = const SizedBox(
+      height: CustomStyles.formElementMargin,
     );
 
     for (Question question in poll.questions) {
@@ -82,6 +77,12 @@ class _VoteViewState extends State<VoteView> {
           key: Key(question.id),
           question: question,
           onVote: (Question q, String optionId) async {
+            http.Response response =
+                await http.get(Uri.parse('https://api.ipify.org/?format=json'));
+
+            Map<String, dynamic> responseContent = jsonDecode(response.body);
+            String userIp = responseContent['ip'];
+
             Answer answer = Answer(
                 answerId: const Uuid().v1(),
                 pollId: widget.pollId,
@@ -102,11 +103,11 @@ class _VoteViewState extends State<VoteView> {
 
   Widget createPollHeader(Poll poll) {
     return Container(
-      margin: EdgeInsets.all(_formElementMargin),
-      padding: EdgeInsets.all(_formElementMargin),
+      margin: const EdgeInsets.all(CustomStyles.formElementMargin),
+      padding: const EdgeInsets.all(CustomStyles.formElementMargin),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(_itemBorderRadius),
+        borderRadius: BorderRadius.circular(CustomStyles.itemBorderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,8 +116,8 @@ class _VoteViewState extends State<VoteView> {
             poll.name,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          SizedBox(
-            height: _formElementMargin / 2,
+          const SizedBox(
+            height: CustomStyles.formElementMargin / 2,
           ),
           Text(
             poll.description,
@@ -128,8 +129,8 @@ class _VoteViewState extends State<VoteView> {
 
   Widget createSendAnswerButton() {
     return Container(
-      height: _buttonHeight,
-      margin: EdgeInsets.all(_formElementMargin),
+      height: CustomStyles.buttonHeight,
+      margin: const EdgeInsets.all(CustomStyles.formElementMargin),
       child: ElevatedButton(
           onPressed: () async {
             showDialog(
@@ -168,13 +169,7 @@ class _VoteViewState extends State<VoteView> {
   }
 
   Future<Poll> _loadData() async {
-    http.Response response =
-        await http.get(Uri.parse('https://api.ipify.org/?format=json'));
-
-    Map<String, dynamic> responseContent = jsonDecode(response.body);
-    userIp = responseContent['ip'];
-
-    await PollServiceHandler().checkForVote(userIp);
+    bThankYouScreen = await PollServiceHandler().checkForVote(widget.pollId);
 
     return await PollServiceHandler().onLoadPollById(widget.pollId);
   }

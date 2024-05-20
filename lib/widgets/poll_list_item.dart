@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poll_app/entity/poll.dart';
 import 'package:poll_app/utils/app_status.dart';
+import 'package:poll_app/utils/custom_styles.dart';
 
 class PollListItem extends StatefulWidget {
   final Poll poll;
@@ -12,15 +13,13 @@ class PollListItem extends StatefulWidget {
 }
 
 class _PollListItemState extends State<PollListItem> {
-  final double _formElementMargin = 15;
-
   @override
   Widget build(BuildContext context) {
-    SizedBox sizedBox = SizedBox(
-      height: _formElementMargin,
+    SizedBox sizedBox = const SizedBox(
+      height: CustomStyles.formElementMargin,
     );
 
-    final ButtonStyle _actionButtonStyle = ElevatedButton.styleFrom(
+    final ButtonStyle actionButtonStyle = ElevatedButton.styleFrom(
       shape: const CircleBorder(),
       padding: const EdgeInsets.all(15),
     );
@@ -28,7 +27,7 @@ class _PollListItemState extends State<PollListItem> {
     return InkWell(
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.all(_formElementMargin),
+        padding: const EdgeInsets.all(CustomStyles.formElementMargin),
         decoration: BoxDecoration(
             color: Colors.white,
             border:
@@ -56,7 +55,8 @@ class _PollListItemState extends State<PollListItem> {
                       sizedBox,
                       sizedBox,
                       Text(
-                        "Votes: ${widget.poll.questions.length.toString()}",
+                        //TODO
+                        "Votes: 0",
                         style: Theme.of(context).textTheme.labelLarge,
                       )
                     ],
@@ -70,7 +70,7 @@ class _PollListItemState extends State<PollListItem> {
                       children: [
                         ElevatedButton(
                           onPressed: () {},
-                          style: _actionButtonStyle,
+                          style: actionButtonStyle,
                           child: const Icon(Icons.edit),
                         ),
                         ElevatedButton(
@@ -85,7 +85,7 @@ class _PollListItemState extends State<PollListItem> {
 
                             Navigator.of(context).pushNamed(routeName);
                           },
-                          style: _actionButtonStyle,
+                          style: actionButtonStyle,
                           child: const Icon(Icons.bar_chart_outlined),
                         ),
                       ],

@@ -1,46 +1,100 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:poll_app/entity/answer.dart';
-import 'package:poll_app/entity/option.dart';
 import 'package:poll_app/entity/poll.dart';
 import 'package:poll_app/entity/question.dart';
-import 'package:uuid/uuid.dart';
 
 class PollServiceHandler {
+  static const String _serviceURL = "http://localhost:8000";
+
   Future<bool> onSavePoll(
       String pollName, String pollDescr, List<Question> questions) async {
-    //TODO
-    return true;
+    try {
+      Poll poll = Poll(
+          id: '',
+          description: pollDescr,
+          name: pollName,
+          questions: questions,
+          timestamp: DateTime.now());
+
+      http.Response response = await http.post(Uri.parse("$_serviceURL/poll"),
+          body: jsonEncode(poll.toJSON()));
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<List<Poll>> loadPolls() async {
+    List<Poll> polls = [];
+
+    http.Response response = await http.get(Uri.parse("$_serviceURL/poll"));
+    List responseContent = jsonDecode(response.body);
+
+    for (Map<String, dynamic> pollResponse in responseContent) {
+      Poll poll = Poll.fromJSON(pollResponse);
+      polls.add(poll);
+    }
+
+    return polls;
   }
 
   Future<Poll> onLoadPollById(String id) async {
-    //TODO remove
-    List<Option> options = [
-      Option(Uuid().v1(), '', '', false, false, 'Green'),
-      Option(Uuid().v1(), '', '', false, false, 'Blue'),
-      Option(Uuid().v1(), '', '', false, false, 'Yellow'),
-      Option(Uuid().v1(), '', '', false, false, 'Red'),
-      Option(Uuid().v1(), '', '', false, false, 'Black')
-    ];
+    http.Response response = await http.get(Uri.parse('$_serviceURL/poll/$id'));
 
-    Question question = Question(Uuid().v1(), 'What is your favorite color?',
-        'EN', QuestionType.multiSelection, options, []);
+    Map<String, dynamic> responseContent = jsonDecode(response.body);
+    Poll poll = Poll.fromJSON(responseContent);
 
-    options = [
-      Option(Uuid().v1(), '', '', false, false, 'Herr'),
-      Option(Uuid().v1(), '', '', false, false, 'Frau'),
-    ];
-
-    Question question1 = Question(Uuid().v1(), 'Anrede?', 'EN',
-        QuestionType.singleSelection, options, []);
-
-    return Poll(
-        id: Uuid().v4(),
-        name: 'My First Poll',
-        description: 'This is a test for a poll in my dashboard',
-        timestamp: DateTime.now(),
-        questions: [question, question1]);
+    return poll;
   }
 
-  onVoteForPoll(Answer answer) {}
+  Future<bool> onVoteForPoll(Answer answer) async {
+    http.Response responseAnswer = await http.post(
+      Uri.parse("$_serviceURL/answer"),
+      body: jsonEncode(answer.toJSON()),
+    );
 
-  checkForVote(String userIp) {}
+    if (responseAnswer.statusCode == 201 || responseAnswer.statusCode == 200) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> checkForVote(String pollId) async {
+    http.Response response =
+        await http.get(Uri.parse('https://api.ipify.org/?format=json'));
+
+    Map<String, dynamic> responseContent = jsonDecode(response.body);
+    String userIp = responseContent['ip'];
+
+    http.Response responseCheck =
+        await http.get(Uri.parse("$_serviceURL/checkAnswer/$userIp/$pollId"));
+
+    Map<String, dynamic> responseContentCheck = jsonDecode(responseCheck.body);
+
+    return responseContentCheck['hasVoted'];
+  }
+
+  Future<List<Answer>> getAnswersForPoll(String pollId) async {
+    List<Answer> answers = [];
+
+    http.Response responseAnswer =
+        await http.get(Uri.parse("$_serviceURL/answer/$pollId"));
+
+    List responseContent = jsonDecode(responseAnswer.body);
+
+    for (Map<String, dynamic> answerResponse in responseContent) {
+      Answer answer = Answer.fromJSON(answerResponse);
+      answers.add(answer);
+    }
+
+    return answers;
+  }
 }
